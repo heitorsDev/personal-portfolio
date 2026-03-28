@@ -6,6 +6,7 @@ const sequelize = require('./src/config/database');
 
 const indexRoutes = require('./src/routes/index');
 const authRoutes = require('./src/routes/auth');
+const projectRoutes = require('./src/routes/project');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,8 @@ app.use(cookieParser());
 
 app.use('/api', indexRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);
