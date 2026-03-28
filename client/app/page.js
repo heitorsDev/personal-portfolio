@@ -3,6 +3,8 @@ import AuthStatus from '@/components/AuthStatus';
 
 export default async function Home() {
   const projects = await projectService.getAll();
+  console.log('Total projects:', projects.length);
+  console.log('Projects data:', projects);
   
   return (
     <main>

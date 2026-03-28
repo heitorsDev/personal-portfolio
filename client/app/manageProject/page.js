@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { projectService } from '@/lib/api';
+import { projectService, authService } from '@/lib/api';
 
 export default function ManageProject() {
   const searchParams = useSearchParams();
   const projectId = searchParams.get('id');
   const isEditMode = Boolean(projectId);
 
+  const [user, setUser] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -23,10 +25,25 @@ export default function ManageProject() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (isEditMode) {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const response = await authService.getMe();
+      setUser(response.user);
+    } catch {
+      window.location.href = '/auth';
+    } finally {
+      setCheckingAuth(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isEditMode && user) {
       fetchProject();
     }
-  }, [projectId]);
+  }, [projectId, user]);
 
   const fetchProject = async () => {
     try {
@@ -57,13 +74,17 @@ export default function ManageProject() {
     setError('');
     setMessage('');
 
+    console.log('Submitting form data:', formData);
+
     try {
       if (isEditMode) {
-        await projectService.update(projectId, formData);
+        const result = await projectService.update(projectId, formData);
+        console.log('Update result:', result);
         setMessage('Project updated successfully!');
       } else {
-        await projectService.create(formData);
-        setMessage('Project created successfully!');
+        const newProject = await projectService.create(formData);
+        console.log('Create result:', newProject);
+        setMessage(`Project "${newProject.title}" created successfully!`);
         setFormData({
           title: '',
           description: '',
@@ -75,6 +96,7 @@ export default function ManageProject() {
         });
       }
     } catch (err) {
+      console.error('Submit error:', err);
       setError(err.message || 'Failed to save project');
     }
   };
@@ -91,7 +113,7 @@ export default function ManageProject() {
     }
   };
 
-  if (loading) return <main><p>Loading...</p></main>;
+  if (checkingAuth || loading) return <main><p>Loading...</p></main>;
 
   return (
     <main>

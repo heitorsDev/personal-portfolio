@@ -8,16 +8,20 @@ async function fetchAPI(endpoint, options = {}) {
       'Content-Type': 'application/json',
     },
     credentials: 'include',
+    cache: 'no-store',
   };
 
+  console.log('API Request:', url, options);
   const response = await fetch(url, { ...defaultOptions, ...options });
+  
+  const data = await response.json();
+  console.log('API Response:', endpoint, data);
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-    throw new Error(error.message || `HTTP error! status: ${response.status}`);
+    throw new Error(data.message || `HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  return data;
 }
 
 export const api = {
