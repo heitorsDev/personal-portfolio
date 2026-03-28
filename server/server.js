@@ -12,8 +12,25 @@ const projectRoutes = require('./src/routes/project');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Normalize CLIENT_URL to remove trailing slash for CORS matching
+const rawClientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+const clientUrl = rawClientUrl.replace(/\/$/, '');
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Normalize the incoming origin
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    const allowedOrigin = clientUrl.replace(/\/$/, '');
+    
+    if (normalizedOrigin === allowedOrigin || origin === allowedOrigin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
