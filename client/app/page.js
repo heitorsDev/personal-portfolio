@@ -1,11 +1,40 @@
-import { projectService } from '@/lib/api';
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { projectService, authService } from '@/lib/api';
 import AuthStatus from '@/components/AuthStatus';
 import Project from '@/components/Project';
 
-export default async function Home() {
-  const projects = await projectService.getAll();
-  console.log('Total projects:', projects.length);
-  console.log('Projects data:', projects);
+export default function Home() {
+  const [projects, setProjects] = useState([]);
+  const [logged, setLogged] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects();
+    checkAuth();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const data = await projectService.getAll();
+      setProjects(data);
+    } catch (err) {
+      console.error('Failed to fetch projects:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkAuth = async () => {
+    try {
+      await authService.getMe();
+      setLogged(true);
+    } catch {
+      setLogged(false);
+    }
+  };
   
   return (
     <main>
@@ -14,12 +43,21 @@ export default async function Home() {
         <AuthStatus />
       </header>
       
-      <h1>Heitor Hillesheim</h1>
-      <h2>Forming mechatronics engineer</h2>
+      <h1>Portfolio</h1>
+      <h2>Heitor Hillesheim</h2>
       
       <section>
-        <h2>Projects</h2>
-        {projects.length === 0 ? (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2>Projects</h2>
+          {logged && (
+            <Link href="/manageProject">
+              <button>Create Project</button>
+            </Link>
+          )}
+        </div>
+        {loading ? (
+          <p>Loading...</p>
+        ) : projects.length === 0 ? (
           <p>No projects found.</p>
         ) : (
           <ul>
