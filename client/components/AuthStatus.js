@@ -43,5 +43,5 @@ export default function AuthStatus() {
     );
   }
 
-  return <a href="/login">Login</a>;
+  return <a href="/auth">Login</a>;
 }
