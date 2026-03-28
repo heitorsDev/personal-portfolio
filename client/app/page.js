@@ -1,10 +1,16 @@
 import { projectService } from '@/lib/api';
+import AuthStatus from '@/components/AuthStatus';
 
 export default async function Home() {
   const projects = await projectService.getAll();
 
   return (
     <main>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0' }}>
+        <div />
+        <AuthStatus />
+      </header>
+      
       <h1>Heitor Hillesheim</h1>
       <h2>Forming mechatronics engineer</h2>
       

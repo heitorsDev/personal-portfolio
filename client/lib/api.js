@@ -7,6 +7,7 @@ async function fetchAPI(endpoint, options = {}) {
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
   };
 
   const response = await fetch(url, { ...defaultOptions, ...options });
@@ -39,4 +40,5 @@ export const authService = {
   login: (credentials) => api.post('/api/auth/login', credentials),
   register: (data) => api.post('/api/auth/register', data),
   logout: () => api.post('/api/auth/logout'),
+  getMe: () => api.get('/api/auth/me'),
 };
