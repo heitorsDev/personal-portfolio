@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { projectService, authService } from '@/lib/api';
+import styles from '@/styles/Form.module.css';
 
 export default function ManageProject() {
   const searchParams = useSearchParams();
@@ -74,16 +76,12 @@ export default function ManageProject() {
     setError('');
     setMessage('');
 
-    console.log('Submitting form data:', formData);
-
     try {
       if (isEditMode) {
-        const result = await projectService.update(projectId, formData);
-        console.log('Update result:', result);
+        await projectService.update(projectId, formData);
         setMessage('Project updated successfully!');
       } else {
         const newProject = await projectService.create(formData);
-        console.log('Create result:', newProject);
         setMessage(`Project "${newProject.title}" created successfully!`);
         setFormData({
           title: '',
@@ -96,7 +94,6 @@ export default function ManageProject() {
         });
       }
     } catch (err) {
-      console.error('Submit error:', err);
       setError(err.message || 'Failed to save project');
     }
   };
@@ -113,104 +110,144 @@ export default function ManageProject() {
     }
   };
 
-  if (checkingAuth || loading) return <main><p>Loading...</p></main>;
+  if (checkingAuth || loading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.loading}>
+            <div className={styles.spinner}></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main>
-      <h1>{isEditMode ? 'Edit Project' : 'Create Project'}</h1>
+    <div className={styles.page}>
+      <div className={styles.container}>
+        <div className={styles.card}>
+          <div className={styles.header}>
+            <span className={styles.tag}>{isEditMode ? 'Edit Project' : 'New Project'}</span>
+            <h1 className={styles.title}>{isEditMode ? 'Edit Project' : 'Create Project'}</h1>
+            <p className={styles.subtitle}>
+              {isEditMode ? 'Update your project details' : 'Add a new project to your portfolio'}
+            </p>
+          </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {message && <p style={{ color: 'green' }}>{message}</p>}
+          {error && <div className={styles.error}>{error}</div>}
+          {message && <div className={styles.success}>{message}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title *</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.field}>
+              <label className={styles.label}>Title *</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Enter project title"
+                className={styles.input}
+                required
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Describe your project..."
+                className={styles.input}
+                rows="4"
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>Image URL</label>
+              <input
+                type="url"
+                name="imageLink"
+                value={formData.imageLink}
+                onChange={handleChange}
+                placeholder="https://example.com/image.jpg"
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>Main Link</label>
+              <input
+                type="url"
+                name="mainLink"
+                value={formData.mainLink}
+                onChange={handleChange}
+                placeholder="https://example.com/project"
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>GitHub Link</label>
+              <input
+                type="url"
+                name="githubLink"
+                value={formData.githubLink}
+                onChange={handleChange}
+                placeholder="https://github.com/username/repo"
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>YouTube Link</label>
+              <input
+                type="url"
+                name="youtubeLink"
+                value={formData.youtubeLink}
+                onChange={handleChange}
+                placeholder="https://youtube.com/watch?v=..."
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>Onshape Link</label>
+              <input
+                type="url"
+                name="onshapeLink"
+                value={formData.onshapeLink}
+                onChange={handleChange}
+                placeholder="https://cad.onshape.com/..."
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.actions}>
+              <button type="submit" className={styles.btnPrimary}>
+                {isEditMode ? 'Save Changes' : 'Create Project'}
+              </button>
+
+              {isEditMode && (
+                <button type="button" onClick={handleDelete} className={styles.btnDanger}>
+                  Delete Project
+                </button>
+              )}
+            </div>
+          </form>
         </div>
 
-        <div>
-          <label>Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows="4"
-          />
+        <div className={styles.linkWrapper}>
+          <Link href="/" className={styles.backLink}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            Back to Portfolio
+          </Link>
         </div>
-
-        <div>
-          <label>Image URL</label>
-          <input
-            type="url"
-            name="imageLink"
-            value={formData.imageLink}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label>Main Link</label>
-          <input
-            type="url"
-            name="mainLink"
-            value={formData.mainLink}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label>GitHub Link</label>
-          <input
-            type="url"
-            name="githubLink"
-            value={formData.githubLink}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label>YouTube Link</label>
-          <input
-            type="url"
-            name="youtubeLink"
-            value={formData.youtubeLink}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label>Onshape Link</label>
-          <input
-            type="url"
-            name="onshapeLink"
-            value={formData.onshapeLink}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-          <button type="submit">
-            {isEditMode ? 'Save Changes' : 'Create Project'}
-          </button>
-
-          {isEditMode && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              style={{ backgroundColor: 'red', color: 'white' }}
-            >
-              Delete Project
-            </button>
-          )}
-        </div>
-      </form>
-    </main>
+      </div>
+    </div>
   );
 }
 
