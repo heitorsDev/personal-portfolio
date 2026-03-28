@@ -1,7 +1,7 @@
-import { projectService } from '@/lib/api';
+import { authService } from '@/lib/api';
 
 export default async function Home() {
-  const projects = await projectService.getAll();
+  const projects = await authService.getAll();
 
   return (
     <main>
