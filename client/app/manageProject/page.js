@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { projectService, authService } from '@/lib/api';
 
-export default function ManageProject() {
+function ManageProjectContent() {
   const searchParams = useSearchParams();
   const projectId = searchParams.get('id');
   const isEditMode = Boolean(projectId);
@@ -211,6 +211,14 @@ export default function ManageProject() {
         </div>
       </form>
     </main>
+  );
+}
+
+export default function ManageProject() {
+  return (
+    <Suspense fallback={<main><p>Loading...</p></main>}>
+      <ManageProjectContent />
+    </Suspense>
   );
 }
 
