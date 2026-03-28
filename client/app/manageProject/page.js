@@ -1,14 +1,15 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { projectService, authService } from '@/lib/api';
 import styles from '@/styles/Form.module.css';
 
-export default function ManageProject() {
+function ManageProjectContent() {
   const searchParams = useSearchParams();
-  const projectId = searchParams.get('id');
+  const projectId = searchParams?.get('id') || null;
   const isEditMode = Boolean(projectId);
 
   const [user, setUser] = useState(null);
@@ -248,6 +249,23 @@ export default function ManageProject() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ManageProject() {
+  return (
+    <Suspense fallback={
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.loading}>
+            <div className={styles.spinner}></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ManageProjectContent />
+    </Suspense>
   );
 }
 
