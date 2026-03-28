@@ -1,5 +1,6 @@
 import { projectService } from '@/lib/api';
 import AuthStatus from '@/components/AuthStatus';
+import Project from '@/components/Project';
 
 export default async function Home() {
   const projects = await projectService.getAll();
@@ -23,10 +24,18 @@ export default async function Home() {
         ) : (
           <ul>
             {projects.map((project) => (
-              <li key={project.id}>
-                <h3>{project.title}</h3>
-                <p>{project.description}</p>
-              </li>
+              <>
+                <Project 
+                  id={project.id}
+                  title={project.title}
+                  description={project.description}
+                  imageLink={project.imageLink}
+                  mainLink={project.mainLink}
+                  githubLink={project.githubLink}
+                  youtubeLink={project.youtubeLink}
+                  onshapeLink={project.onshapeLink}
+                />
+              </>
             ))}
           </ul>
         )}
