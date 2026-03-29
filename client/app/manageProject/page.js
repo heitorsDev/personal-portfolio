@@ -22,6 +22,7 @@ function ManageProjectContent() {
     githubLink: '',
     youtubeLink: '',
     onshapeLink: '',
+    active: false
   });
   const [loading, setLoading] = useState(isEditMode);
   const [error, setError] = useState('');
@@ -59,6 +60,7 @@ function ManageProjectContent() {
         githubLink: project.githubLink || '',
         youtubeLink: project.youtubeLink || '',
         onshapeLink: project.onshapeLink || '',
+        active: project.active || false,
       });
     } catch (err) {
       setError('Failed to load project');
@@ -68,8 +70,8 @@ function ManageProjectContent() {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = async (e) => {
@@ -92,6 +94,7 @@ function ManageProjectContent() {
           githubLink: '',
           youtubeLink: '',
           onshapeLink: '',
+          active: false,
         });
       }
     } catch (err) {
@@ -152,7 +155,17 @@ function ManageProjectContent() {
                 required
               />
             </div>
-
+            <div className={styles.field}>
+              <label className={styles.label}>Active</label>
+              <input
+                type="checkbox"
+                name="active"
+                checked={formData.active}
+                onChange={handleChange}
+                className={styles.input}
+              />
+            </div>
+            
             <div className={styles.field}>
               <label className={styles.label}>Description</label>
               <textarea

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { authService } from '@/lib/api';
 import styles from './Project.module.css';
 
-export default function Project({id, title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink}) {
+export default function Project({id, title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink, active}) {
     const [logged, setLogged] = useState(false);
 
     useEffect(() => {
@@ -44,6 +44,9 @@ export default function Project({id, title, description, imageLink, mainLink, gi
       </div>
       
       <div className={styles.content}>
+        {active && (
+          <span className={styles.activeTag}>Active</span>
+        )}
         <h3 className={styles.title}>{title}</h3>
         <p className={styles.description}>{description || 'No description available'}</p>
         

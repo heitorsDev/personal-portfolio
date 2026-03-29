@@ -168,6 +168,7 @@ export default function Home() {
                     githubLink={project.githubLink}
                     youtubeLink={project.youtubeLink}
                     onshapeLink={project.onshapeLink}
+                    active={project.active}
                   />
                 ))}
               </div>
