@@ -1,14 +1,14 @@
-const { Sequelize } = require('sequelize');
-const path = require('path');
+const { Sequelize } = require("sequelize");
+const { Database } = require("libsql");
 
 const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: process.env.DB_PATH || path.join(__dirname, '../database.sqlite'),
-  logging: process.env.NODE_ENV === 'development' ? console.log : false,
-  define: {
-    timestamps: true,
-    underscored: true,
+  dialect: "sqlite",
+  dialectModule: Database,
+  dialectOptions: {
+    url: process.env.TURSO_DATABASE_URL,
+    authToken: process.env.TURSO_DATABASE_TOKEN,
   },
+  logging: false,
 });
 
 module.exports = sequelize;
