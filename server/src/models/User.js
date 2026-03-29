@@ -1,8 +1,14 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/database');
 const bcrypt = require('bcrypt');
 
-const User = sequelize.define('User', {
+class User extends Model {
+  async comparePassword(candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+  }
+}
+
+User.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -25,6 +31,7 @@ const User = sequelize.define('User', {
     allowNull: true,
   },
 }, {
+  sequelize,
   tableName: 'users',
   hooks: {
     beforeCreate: async (user) => {
@@ -41,9 +48,5 @@ const User = sequelize.define('User', {
     },
   },
 });
-
-User.prototype.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
-};
 
 module.exports = User;
