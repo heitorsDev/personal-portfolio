@@ -50,12 +50,15 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
   try {
+    console.log('Connecting to database...');
     await sequelize.authenticate();
     console.log('Database connection established successfully.');
 
+    console.log('Synchronizing database...');
     await sequelize.sync({ alter: true });
     console.log('Database synchronized.');
 
+    console.log(`Starting server on port ${PORT}...`);
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
