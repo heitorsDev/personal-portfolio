@@ -28,8 +28,8 @@ exports.getProjectById = async (req, res) => {
 exports.createProject = async (req, res) => {
   try {
     console.log('Create project - Request body:', req.body);
-    const { title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink } = req.body;
-    const project = await Project.create({ title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink });
+    const { title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink, active } = req.body;
+    const project = await Project.create({ title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink, active });
     console.log('Create project - Created:', project.toJSON());
     res.status(201).json(project);
   } catch (error) {
@@ -42,14 +42,14 @@ exports.editProject = async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Edit project - ID:', id, 'Body:', req.body);
-    const { title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink } = req.body;
+    const { title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink, active } = req.body;
     
     const project = await Project.findByPk(id);
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
     
-    await project.update({ title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink });
+    await project.update({ title, description, imageLink, mainLink, githubLink, youtubeLink, onshapeLink, active });
     console.log('Edit project - Updated:', project.toJSON());
     res.json(project);
   } catch (error) {

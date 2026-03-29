@@ -1,7 +1,7 @@
 {
-  "name": "express-boilerplate",
+  "name": "personal-portfolio-server",
   "version": "1.0.0",
-  "description": "Node Express boilerplate with JWT auth, bcrypt, Sequelize, and SQLite",
+  "description": "Heitor Hillesheim dos Santos personal portfolio server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

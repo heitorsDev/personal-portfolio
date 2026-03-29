@@ -35,6 +35,11 @@ const Project = sequelize.define('Project', {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
+  active: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  }
 }, {
   tableName: 'projects',
 });
