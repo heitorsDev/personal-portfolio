@@ -9,6 +9,7 @@ import styles from './page.module.css';
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
+  const [activeProjects, setActiveProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [logged, setLogged] = useState(false);
@@ -21,7 +22,7 @@ export default function Home() {
 
   useEffect(() => {
     const filtered = projects.filter(project =>
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.description?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProjects(filtered);
@@ -31,6 +32,8 @@ export default function Home() {
     try {
       const data = await projectService.getAll();
       setProjects(data);
+      const active = data.filter(project => project.active);
+      setActiveProjects(active);
       setFilteredProjects(data);
     } catch (err) {
       console.error('Failed to fetch projects:', err);
@@ -48,6 +51,8 @@ export default function Home() {
     }
   };
   
+  
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -129,7 +134,37 @@ export default function Home() {
                 </Link>
               )}
             </div>
-
+            <h2>Currently working on: </h2>
+            {loading ? (
+              <div className={styles.loading}>
+                <div className={styles.spinner}></div>
+                <p>Loading projects...</p>
+              </div>
+            ) : activeProjects.length === 0 ? (
+              <div className={styles.emptyState}>
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="#adb5bd">
+                  <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                </svg>
+                <p>{searchQuery ? 'No projects match your search' : 'No projects found'}</p>
+              </div>
+            ) : (
+              <div className={styles.projectsGrid}>
+                {activeProjects.map((project) => (
+                  <Project 
+                    key={project.id}
+                    id={project.id}
+                    title={project.title}
+                    description={project.description}
+                    imageLink={project.imageLink}
+                    mainLink={project.mainLink}
+                    githubLink={project.githubLink}
+                    youtubeLink={project.youtubeLink}
+                    onshapeLink={project.onshapeLink}
+                    active={project.active}
+                  />
+                ))}
+              </div>
+            )}
             <div className={styles.searchBar}>
               <svg viewBox="0 0 24 24" width="20" height="20" fill="#6c757d">
                 <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
